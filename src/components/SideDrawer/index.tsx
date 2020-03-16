@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
-// import Button from '@material-ui/core/Button';
+import Button from '@material-ui/core/Button';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -12,10 +12,11 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
-// import { Link } from "react-router-dom";
-// import SignOutButton from "../SignOut";
-// import * as ROUTES from "../../constants/routes";
-// import { AuthUserContext } from "../Session";
+import { Link, withRouter } from "react-router-dom";
+import * as ROUTES from "../../constants/routes";
+import { AuthUserContext } from "../../Firebase/Session";
+import { FirebaseContext, withFirebase } from "../../Firebase/Database";
+import { compose } from 'recompose';
 
 const useStyles = makeStyles({
     list: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function TemporaryDrawer() {
+function TemporaryDrawer() {
     const classes = useStyles();
 
     const [openNested, setOpenNested] = React.useState(true);
@@ -87,21 +88,29 @@ export default function TemporaryDrawer() {
             </List>
 
             {/* TODO: Move text to bottom and take outside of button */}
-            {/* <AuthUserContext.Consumer >
+            <AuthUserContext.Consumer >
                 {authUser =>
                     authUser ?
                         <ListItem button onClick={toggleDrawer(side, false)}>
-                            <SignOutButton />
+                            <Link to={ROUTES.LANDING}>
+                                <FirebaseContext.Consumer>
+                                    {firebase => (
+                                        <Button onClick={() => { firebase.doSignOut() }}>
+                                            Sign Out
+                                        </Button>
+                                    )}
+                                </FirebaseContext.Consumer>
+                            </Link>
                         </ListItem>
                         :
                         <ListItem button onClick={toggleDrawer(side, false)}>
-                            <Link to={ROUTES.SIGN_IN}>
+                            <Link to={ROUTES.LOGIN}>
                                 <Button >Sign In</Button>
                             </Link>
                         </ListItem>
                 }
 
-            </AuthUserContext.Consumer> */}
+            </AuthUserContext.Consumer>
         </div>
     );
 
@@ -121,3 +130,10 @@ export default function TemporaryDrawer() {
         </div>
     );
 }
+
+const SideDrawer = compose(
+    withRouter,
+    withFirebase
+)(TemporaryDrawer);
+
+export default SideDrawer;
