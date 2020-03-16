@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { compose } from "recompose";
-import { FormControl, Input, InputLabel, Button } from '@material-ui/core';
+import { Button, Container, Grid, TextField } from '@material-ui/core';
 import { SignUpLink } from "../../Pages/Register";
 // import { PasswordForgetLink } from '../PasswordForget';
 import { withFirebase } from "../../Firebase/Database";
 import * as ROUTES from "../../constants/routes";
+import './login-form-styles.css'
 
 const SignInPage = () => (
     <div>
@@ -19,7 +20,6 @@ const SignInPage = () => (
 interface ILoginComponentState {
     email: string;
     password: string;
-    error: boolean;
 }
 
 interface ILoginComponentProps {
@@ -30,7 +30,6 @@ interface ILoginComponentProps {
 const INITIAL_STATE = {
     email: "",
     password: "",
-    error: false
 };
 
 class SignInFormBase extends Component<ILoginComponentProps, ILoginComponentState> {
@@ -53,32 +52,69 @@ class SignInFormBase extends Component<ILoginComponentProps, ILoginComponentStat
     };
 
     render() {
-        const { email, password, error } = this.state;
+        const { email, password } = this.state;
 
         const isInvalid = password === "" || email === "";
 
         return (
-            // TODO: Style the form to make it look nicer
-            <form onSubmit={this.onSubmit}>
-                <FormControl margin="normal" required fullWidth>
-                    <InputLabel htmlFor="email">Email Address</InputLabel>
-                    <Input id="email" name="email" autoComplete="off" autoFocus value={email} onChange={(event: any) => { this.setState({ email: event.target.value }) }} />
-                </FormControl>
-                <FormControl margin="normal" required fullWidth>
-                    <InputLabel htmlFor="password">Password</InputLabel>
-                    <Input name="password" type="password" id="password" autoComplete="off" value={password} onChange={(event: any) => { this.setState({ password: event.target.value }) }} />
-                </FormControl>
-
-                <Button disabled={isInvalid} type="submit">
-                    Sign In
-                </Button>
-
-                {/* TODO: Put proper error message */}
-                {error && <p>Error Message</p>}
-            </form>
+            <Container className="login-form-container">
+                <form onSubmit={this.onSubmit}>
+                    <Grid
+                        container
+                        direction="column"
+                        justify="center"
+                        alignItems="center"
+                    >
+                        <Grid className="login-form-inputs">
+                            <TextField
+                                required
+                                id="Email"
+                                label="Email Address"
+                                value={email}
+                                onChange={(event: any) => { this.setState({ email: event.target.value }) }}
+                                variant="outlined"
+                                fullWidth
+                                autoFocus
+                                margin="normal"
+                                color="secondary"
+                            />
+                        </Grid>
+                        <Grid className="login-form-inputs">
+                            <TextField
+                                required
+                                id="password"
+                                label="Password"
+                                type="password"
+                                value={password}
+                                onChange={(event: any) => { this.setState({ password: event.target.value }) }}
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                color="secondary"
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid
+                        className="login-button"
+                        container
+                        direction="row"
+                    >
+                        <Button disabled={isInvalid} variant="outlined" type="submit" >
+                            Sign In
+                        </Button>
+                    </Grid>
+                </form>
+            </Container>
         );
     }
 }
+
+const SignInLink = () => (
+    <p>
+        {`Already have an account? `}
+        <Link to={ROUTES.LOGIN}>Login</Link>
+    </p>
+);
 
 
 // TODO: Put proper types when I figure out what it is supposed to be 
@@ -89,4 +125,4 @@ const SignInForm = compose<any, any>(
 
 export default SignInPage;
 
-export { SignInForm };
+export { SignInForm, SignInLink };
